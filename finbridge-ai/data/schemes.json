@@ -1,0 +1,93 @@
+[
+  {
+    "schemeId": "PMJDY",
+    "schemeName": "Pradhan Mantri Jan Dhan Yojana",
+    "ageMin": 18,
+    "ageMax": 65,
+    "incomeCeiling": null,
+    "gender": null,
+    "requiresExistingBankAccount": false,
+    "taxPayerStatus": "not_applicable",
+    "benefits": ["Basic banking", "Accidental insurance"],
+    "documents": ["Aadhaar", "Address proof"],
+    "applyLink": "https://example.gov.in/pmjdy"
+  },
+  {
+    "schemeId": "APY",
+    "schemeName": "Atal Pension Yojana",
+    "ageMin": 18,
+    "ageMax": 40,
+    "incomeCeiling": null,
+    "gender": null,
+    "requiresExistingBankAccount": true,
+    "taxPayerStatus": "optional",
+    "benefits": ["Pension after 60"],
+    "documents": ["Bank account details", "Aadhaar"],
+    "applyLink": "https://example.gov.in/apy"
+  },
+  {
+    "schemeId": "PMJJBY",
+    "schemeName": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+    "ageMin": 18,
+    "ageMax": 50,
+    "incomeCeiling": null,
+    "gender": null,
+    "requiresExistingBankAccount": true,
+    "taxPayerStatus": "not_applicable",
+    "benefits": ["Life insurance"],
+    "documents": ["Bank account"],
+    "applyLink": "https://example.gov.in/pmjjby"
+  },
+  {
+    "schemeId": "PMSBY",
+    "schemeName": "Pradhan Mantri Suraksha Bima Yojana",
+    "ageMin": 18,
+    "ageMax": 70,
+    "incomeCeiling": null,
+    "gender": null,
+    "requiresExistingBankAccount": true,
+    "taxPayerStatus": "not_applicable",
+    "benefits": ["Accident insurance"],
+    "documents": ["Bank account"],
+    "applyLink": "https://example.gov.in/pmsby"
+  },
+  {
+    "schemeId": "SSY",
+    "schemeName": "Sukanya Samriddhi Yojana",
+    "ageMin": 0,
+    "ageMax": 10,
+    "incomeCeiling": null,
+    "gender": "female",
+    "requiresExistingBankAccount": true,
+    "taxPayerStatus": "optional",
+    "benefits": ["Higher interest for girl child"],
+    "documents": ["Birth certificate", "Parent ID"],
+    "applyLink": "https://example.gov.in/ssy"
+  },
+  {
+    "schemeId": "SCSS",
+    "schemeName": "Senior Citizens Savings Scheme",
+    "ageMin": 60,
+    "ageMax": 75,
+    "incomeCeiling": null,
+    "gender": null,
+    "requiresExistingBankAccount": true,
+    "taxPayerStatus": "optional",
+    "benefits": ["Quarterly interest"],
+    "documents": ["Age proof", "ID proof"],
+    "applyLink": "https://example.gov.in/scss"
+  },
+  {
+    "schemeId": "NPS",
+    "schemeName": "National Pension System",
+    "ageMin": 18,
+    "ageMax": 65,
+    "incomeCeiling": null,
+    "gender": null,
+    "requiresExistingBankAccount": true,
+    "taxPayerStatus": "optional",
+    "benefits": ["Pension at retirement"],
+    "documents": ["ID proof", "Bank account"],
+    "applyLink": "https://example.gov.in/nps"
+  }
+]
