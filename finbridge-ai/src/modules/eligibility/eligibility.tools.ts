@@ -1,30 +1,33 @@
-import { ToolDecorator as Tool, ExecutionContext, z } from '@nitrostack/core';
-import { CheckSchemeEligibilityInput, EligibilityResult } from '../../shared/contracts.js';
+import { ToolDecorator as Tool, ExecutionContext } from '@nitrostack/core';
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+import { CheckSchemeEligibilityInput, EligibilityResult, Scheme } from '../../shared/contracts.js';
+import { evaluateEligibility } from './eligibility.engine.js';
+
+// Resolve data/ relative to THIS module, not process.cwd(), so it works in the
+// deployed artifact where cwd is unreliable. Matches knowledge.resources.ts.
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = path.resolve(MODULE_DIR, '..', '..', '..', 'data');
 
 export class EligibilityTools {
   @Tool({
     name: 'check_scheme_eligibility',
-    description: 'Check eligibility for government schemes',
+    description: 'Evaluate all 7 government schemes (PMJDY, APY, PMJJBY, PMSBY, SSY, SCSS, NPS) against an applicant profile and return eligible and ineligible schemes with named reasons.',
     inputSchema: CheckSchemeEligibilityInput
   })
-  async checkSchemeEligibility(input: any, ctx: ExecutionContext) {
+  async checkSchemeEligibility(input: CheckSchemeEligibilityInput, ctx: ExecutionContext): Promise<EligibilityResult> {
     ctx.logger.info('check_scheme_eligibility called', { input });
 
-    // Validate input using zod (inputSchema provided by decorator in runtime)
+    const file = path.join(DATA_DIR, 'schemes.json');
+    const schemes = JSON.parse(fs.readFileSync(file, 'utf-8')) as Scheme[];
 
-    // Return two eligible and two ineligible schemes as required by the contract
-    const result = {
-      eligible: [
-        { schemeId: 'PMJDY', schemeName: 'Pradhan Mantri Jan Dhan Yojana', reason: 'Meets age and bank account criteria' },
-        { schemeId: 'APY', schemeName: 'Atal Pension Yojana', reason: 'Eligible based on occupation and contributions' }
-      ],
-      ineligible: [
-        { schemeId: 'SSY', schemeName: 'Sukanya Samriddhi Yojana', failedCondition: 'Requires girl-child beneficiary' },
-        { schemeId: 'NPS', schemeName: 'National Pension System', failedCondition: 'Income exceeds allowed ceiling' }
-      ],
-      risk_note: 'This is an educational eligibility check; verify with official sources before applying.',
-      educational_only: true
-    };
+    const result = evaluateEligibility(schemes, input);
+
+    ctx.logger.info('check_scheme_eligibility result', {
+      eligibleCount: result.eligible.length,
+      ineligibleCount: result.ineligible.length
+    });
 
     return result;
   }

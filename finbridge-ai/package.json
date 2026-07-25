@@ -16,7 +16,8 @@
     "sweep": "npm run build:server && node scripts/sweep.mjs",
     "sweep:fast": "node scripts/sweep.mjs",
     "audit:secrets": "node scripts/secrets-audit.mjs",
-    "pack": "nitrostack-cli pack"
+    "pack": "nitrostack-cli pack",
+    "test:eligibility": "node --test tests/eligibility.test.ts"
   },
   "dependencies": {
     "dotenv": "16.6.1",
