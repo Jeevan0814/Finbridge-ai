@@ -16,7 +16,8 @@ import { SystemHealthCheck } from './health/system.health.js';
   module: AppModule,
   server: {
     name: 'finbridge-ai',
-    version: '1.0.0'
+    version: '1.0.0',
+    description: "Verifiable financial ground truth for India's public schemes and mutual funds"
   },
   logging: {
     level: 'info'

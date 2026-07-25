@@ -1,0 +1,29 @@
+# Normalize all text files to LF in the repository.
+# Without this, Windows checkouts stage CRLF and every file shows as
+# fully modified — which produces phantom merge conflicts and breaks the
+# rule that "a conflict means someone broke ownership."
+* text=auto eol=lf
+
+# Explicitly text
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Lockfiles: text, but never show them in diffs by default
+package-lock.json linguist-generated=true
+
+# Binary — never convert
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.mp4 binary
+*.woff  binary
+*.woff2 binary

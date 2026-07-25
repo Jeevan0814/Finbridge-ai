@@ -1,49 +1,90 @@
-# NitroStack Starter Template
+# FinBridge AI
 
-Minimal template for learning NitroStack fundamentals with a calculator-focused
-MCP server and basic widgets.
+Verifiable financial ground truth for India's public schemes and mutual funds.
 
-## What This Template Includes
+A NitroStack MCP server that answers eligibility and projection questions from a
+codified rulebook and live NAV data, instead of from a language model's memory.
 
-- `calculator` module with tools, resources, and prompts
-- TypeScript + Zod validation setup
-- Widget-ready project structure
-- Production-friendly npm scripts
+> **Assembly note (Jeevan):** this file is a skeleton. Sections 2–4 are written by
+> their owners and handed to you by 06:00. Drop them in, don't rewrite them.
 
-## Quick Start
+---
+
+## 1. What it does — *Jeevan*
+
+<!-- Overview, the problem, why ground truth matters, install/run instructions,
+     deployed URL, and how to point an MCP client at it. -->
+
+### Tools
+
+| Tool | Owner | What it returns |
+|---|---|---|
+| `check_scheme_eligibility` | Deepak | Every one of 7 schemes sorted into eligible / ineligible, each with a named reason or `failedCondition` |
+| `project_investment_growth` | Praneeth | A low–high range with stated assumptions, never a single confident number |
+| `calculate_financial_health` | Praneeth | Score, three sub-scores, and suggestions |
+| `explain_financial_concept` | Jayaram | Plain-language definition and worked example, read from the glossary |
+
+### Resources
+
+- `finbridge://schemes` — the codified rulebook, all 7 schemes
+- `finbridge://glossary` — 10–15 financial terms
+
+### Prompts
+
+- `beginner_investor_advisor`
+- `scheme_navigator`
+
+Every tool output carries a `risk_note` and `educational_only: true`. This is an
+educational tool, not financial advice.
+
+---
+
+## 2. How eligibility is computed — *Deepak, due 06:00*
+
+<!-- How the evaluator reads data/schemes.json, how each condition is checked,
+     why ineligible results name the specific failed condition, boundary behaviour
+     (exact income ceiling, exact age band edges, girl-child check for SSY). -->
+
+---
+
+## 3. Projection assumptions — *Praneeth, due 06:00*
+
+<!-- Where NAV comes from (mfapi.in), the cached fallback and when it kicks in,
+     what the low and high estimates assume, and what the range explicitly does
+     not account for (inflation, exit load, tax, sequence risk). -->
+
+---
+
+## 4. Hallucination table — *Jayaram, due 06:00*
+
+<!-- 10 edge-case eligibility questions. Bare model steelmanned with the full
+     scheme documents in context. 3 runs each, both sides. Two counts: wrong
+     verdicts, and run-to-run inconsistency on identical inputs. Table plus a
+     short written framing. This is the Innovation argument. -->
+
+---
+
+## Running locally
 
 ```bash
-npx @nitrostack/cli init my-server --template typescript-starter
-cd my-server
+npm install
 npm run dev
 ```
 
-## Common Commands
+Copy `.env.example` to `.env` first. `.env` is gitignored and must never be
+committed.
 
 ```bash
-npm run dev
-npm run build
+npm run build     # production bundle
 npm start
 ```
 
-## NitroStudio
+## Ownership
 
-NitroStudio is the recommended way to test and debug this template during
-development.
-
-- Download: <https://nitrostack.ai/studio>
-- Studio: <https://nitrostack.ai/studio>
+See [CONTRIBUTING.md](./CONTRIBUTING.md). File ownership is strict and
+`src/shared/contracts.ts` is frozen.
 
 ## Links
 
 - Docs: <https://docs.nitrostack.ai>
-- Templates docs: <https://docs.nitrostack.ai/templates/01-starter-template>
-- Main repository: <https://github.com/nitrocloudofficial/nitrostack>
-
-## Community
-
 - Discord: <https://discord.gg/uVWey6UhuD>
-- X: <https://x.com/nitrostackai>
-- YouTube: <https://www.youtube.com/@nitrostackai>
-- LinkedIn: <https://linkedin.com/company/nitrostack-ai/>
-- GitHub: <https://github.com/nitrostackai>
