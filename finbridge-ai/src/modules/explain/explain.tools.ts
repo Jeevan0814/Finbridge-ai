@@ -1,25 +1,75 @@
 import { ToolDecorator as Tool, ExecutionContext } from '@nitrostack/core';
 import { ExplainConceptInput, ExplainConceptOutput } from '../../shared/contracts.js';
+import * as fs from 'fs';
+import * as path from 'path';
+
+/**
+ * GlossaryEntry represents the full structure of a term in glossary.json.
+ */
+interface GlossaryEntry {
+  term: string;
+  definition: string;
+  explanation: string;
+  example: string;
+  relatedTerms: string[];
+  category: string;
+}
+
+/**
+ * Load glossary.json from data directory.
+ * Cached at module level — no repeated file I/O.
+ */
+let _glossary: GlossaryEntry[] | null = null;
+function getGlossary(): GlossaryEntry[] {
+  if (!_glossary) {
+    const file = path.join(process.cwd(), 'data', 'glossary.json');
+    const raw = fs.readFileSync(file, 'utf-8');
+    _glossary = JSON.parse(raw) as GlossaryEntry[];
+  }
+  return _glossary;
+}
 
 export class ExplainTools {
   @Tool({
     name: 'explain_financial_concept',
-    description: 'Provide a beginner-friendly explanation of a financial term',
+    description: 'Look up and explain a financial term from the FinBridge glossary. Provides a beginner-friendly definition, explanation, real-world example, and related terms. Returns a structured error if the term is not found.',
     inputSchema: ExplainConceptInput
   })
   async explainFinancialConcept(input: any, ctx: ExecutionContext) {
     ctx.logger.info('explain_financial_concept called', { input });
 
-    const term = input.term;
+    const glossary = getGlossary();
+    const searchTerm = (input.term as string).trim().toLowerCase();
 
-    const output = {
-      term,
-      explanation: `${term} is a commonly used term in personal finance. This is a short educational explanation.`,
-      example: `Example usage of ${term} in everyday finance: ...`,
-      risk_note: 'Educational-only explanation; consult a qualified advisor for personal advice.',
-      educational_only: true
+    // Case-insensitive exact match first, then partial match
+    let entry = glossary.find(e => e.term.toLowerCase() === searchTerm);
+
+    if (!entry) {
+      // Try partial/contains match
+      entry = glossary.find(e => e.term.toLowerCase().includes(searchTerm) || searchTerm.includes(e.term.toLowerCase()));
+    }
+
+    if (!entry) {
+      // Return structured error — not a crash
+      const availableTerms = glossary.map(e => e.term).join(', ');
+      return {
+        term: input.term,
+        explanation: `The term "${input.term}" was not found in the FinBridge glossary.`,
+        example: `Available terms: ${availableTerms}. Please try one of these or rephrase your query.`,
+        risk_note: 'Term not found. Please consult official financial resources for definitions not in the glossary.',
+        educational_only: true as const
+      };
+    }
+
+    return {
+      term: entry.term,
+      definition: entry.definition,
+      explanation: entry.explanation,
+      example: entry.example,
+      relatedTerms: entry.relatedTerms,
+      category: entry.category,
+      risk_note: 'This explanation is for educational purposes only. Consult a SEBI-registered financial advisor for personalized advice.',
+      educational_only: true as const
     };
-
-    return output;
   }
 }
