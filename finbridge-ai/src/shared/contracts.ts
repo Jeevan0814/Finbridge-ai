@@ -29,11 +29,11 @@ export const Scheme = z.object({
   schemeId: SchemeId,
   schemeName: z.string(),
   ageMin: z.number().int(),
-  ageMax: z.number().int(),
+  ageMax: z.number().int().nullable(),  // AMENDED +4h (all four agreed): PMJDY and SCSS have no upper age limit
   incomeCeiling: z.number().nullable(),
   gender: Gender.optional().nullable(),
   requiresExistingBankAccount: z.boolean(),
-  taxPayerStatus: z.enum(['required', 'optional', 'not_applicable']),
+  taxPayerStatus: z.enum(['required', 'optional', 'not_applicable', 'excluded']),  // AMENDED +4h (all four agreed): APY excludes income-tax payers (Finance Act 2021, effective Oct 2022)
   benefits: z.array(z.string()),
   documents: z.array(z.string()),
   applyLink: z.string().url()

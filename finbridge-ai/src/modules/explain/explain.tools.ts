@@ -2,6 +2,12 @@ import { ToolDecorator as Tool, ExecutionContext } from '@nitrostack/core';
 import { ExplainConceptInput, ExplainConceptOutput } from '../../shared/contracts.js';
 import * as fs from 'fs';
 import * as path from 'path';
+import { fileURLToPath } from 'url';
+
+// Resolve data/ relative to this module (dist/modules/explain/), not cwd —
+// cwd is unreliable in deployed artifacts. Matches knowledge.resources.ts.
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
+const DATA_DIR = path.resolve(MODULE_DIR, '..', '..', '..', 'data');
 
 /**
  * GlossaryEntry represents the full structure of a term in glossary.json.
@@ -22,7 +28,7 @@ interface GlossaryEntry {
 let _glossary: GlossaryEntry[] | null = null;
 function getGlossary(): GlossaryEntry[] {
   if (!_glossary) {
-    const file = path.join(process.cwd(), 'data', 'glossary.json');
+    const file = path.join(DATA_DIR, 'glossary.json');
     const raw = fs.readFileSync(file, 'utf-8');
     _glossary = JSON.parse(raw) as GlossaryEntry[];
   }

@@ -25,7 +25,7 @@ function findFailedCondition(scheme: Scheme, input: CheckSchemeEligibilityInput)
   if (input.age < scheme.ageMin) {
     return `Age ${input.age} is below the minimum age of ${scheme.ageMin}`;
   }
-  if (input.age > scheme.ageMax) {
+  if (scheme.ageMax != null && input.age > scheme.ageMax) {
     return `Age ${input.age} exceeds the maximum age of ${scheme.ageMax}`;
   }
   if (scheme.incomeCeiling != null && input.monthlyIncome > scheme.incomeCeiling) {
@@ -40,11 +40,14 @@ function findFailedCondition(scheme: Scheme, input: CheckSchemeEligibilityInput)
   if (scheme.taxPayerStatus === 'required' && !input.isTaxPayer) {
     return 'Requires tax-payer status';
   }
+  if (scheme.taxPayerStatus === 'excluded' && input.isTaxPayer) {
+    return 'Income-tax payers are excluded from this scheme';
+  }
   return null;
 }
 
 function buildEligibleReason(scheme: Scheme, input: CheckSchemeEligibilityInput): string {
-  const parts = [`age ${input.age} is within ${scheme.ageMin}-${scheme.ageMax}`];
+  const parts = [scheme.ageMax != null ? `age ${input.age} is within ${scheme.ageMin}-${scheme.ageMax}` : `age ${input.age} meets the minimum of ${scheme.ageMin}`];
   if (scheme.incomeCeiling != null) {
     parts.push(`income is within the ceiling of ${scheme.incomeCeiling}`);
   }
