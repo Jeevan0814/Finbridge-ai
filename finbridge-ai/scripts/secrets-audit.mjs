@@ -69,7 +69,11 @@ for (const file of tracked) {
   if (!TEXT_EXT.has(ext) && ext !== '') continue;
   const abs = path.join(ROOT, file);
   if (!fs.existsSync(abs)) continue;
-  if (fs.statSync(abs).size > 2_000_000) continue;
+  const stat = fs.statSync(abs);
+  // git ls-files can surface submodule roots and other non-files; reading one
+  // throws EISDIR and kills the audit.
+  if (!stat.isFile()) continue;
+  if (stat.size > 2_000_000) continue;
   const content = fs.readFileSync(abs, 'utf-8');
   for (const { re, label } of SECRET_PATTERNS) {
     const m = content.match(re);
