@@ -42,6 +42,12 @@ coverage/
 # Uploads
 uploads/
 
+# Sweep logs (scripts/sweep.mjs)
+sweeps/
+
+# nitrostack-cli pack output
+*.zip
+
 # TypeScript cache
 *.tsbuildinfo
 

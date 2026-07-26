@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "finbridge-ai",
+  "description": "Verifiable financial ground truth for India's public schemes and mutual funds",
   "scripts": {
     "dev": "nitrostack-cli dev",
     "build": "nitrostack-cli build",
@@ -11,7 +11,12 @@
     "start:prod": "nitrostack-cli start",
     "upgrade": "nitrostack-cli upgrade",
     "install:all": "nitrostack-cli install",
-    "widget": "npm --prefix src/widgets"
+    "widget": "npm --prefix src/widgets",
+    "build:server": "tsc --project tsconfig.json",
+    "sweep": "npm run build:server && node scripts/sweep.mjs",
+    "sweep:fast": "node scripts/sweep.mjs",
+    "audit:secrets": "node scripts/secrets-audit.mjs",
+    "pack": "nitrostack-cli pack"
   },
   "dependencies": {
     "dotenv": "16.6.1",
