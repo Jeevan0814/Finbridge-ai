@@ -1,31 +1,55 @@
 import { ToolDecorator as Tool, ExecutionContext } from '@nitrostack/core';
-import { FinancialHealthInput } from '../../shared/contracts.js';
+import { FinancialHealthInput, FinancialHealthOutput } from '../../shared/contracts.js';
+import { calculateFinancialHealth } from './financial-health.logic.js';
 
 export class FinancialHealthTools {
   @Tool({
     name: 'calculate_financial_health',
-    description: 'Calculate a simple financial health score',
-    inputSchema: FinancialHealthInput
+    description:
+      'Scores overall financial health from income, expenses, savings, and debt, with sub-scores and actionable suggestions.',
+    inputSchema: FinancialHealthInput,
+    outputSchema: FinancialHealthOutput,
+    examples: {
+      request: {
+        monthlyIncome: 60000,
+        monthlyExpenses: 35000,
+        savings: 150000,
+        monthlyDebtPayment: 8000,
+        emergencyFundMonths: 4
+      },
+      response: {
+        score: 62,
+        subScores: { savingsRate: 58, emergencyFund: 67, debtRatio: 67 },
+        suggestions: [
+          'Your monthly savings rate is low — review discretionary expenses to free up more income for savings and investing.'
+        ],
+        risk_note: 'This is an educational score based on general personal-finance heuristics, not financial advice.',
+        educational_only: true
+      }
+    }
   })
-  async calculateFinancialHealth(input: any, ctx: ExecutionContext) {
-    ctx.logger.info('calculate_financial_health called', { input });
+  async calculateFinancialHealthTool(
+    input: {
+      monthlyIncome: number;
+      monthlyExpenses: number;
+      savings: number;
+      monthlyDebtPayment: number;
+      emergencyFundMonths: number;
+    },
+    ctx: ExecutionContext
+  ) {
+    ctx.logger.info('Calculating financial health', input);
 
-    const savingsRate = input.savings / Math.max(1, input.monthlyIncome);
-    const emergencyFund = (input.savings >= (input.emergencyFundMonths || 3) * input.monthlyExpenses) ? 1 : 0;
-    const debtRatio = input.monthlyDebtPayment / Math.max(1, input.monthlyIncome);
+    if (input.monthlyIncome <= 0) {
+      throw new Error('monthlyIncome must be a positive number');
+    }
 
-    const score = Math.round(100 * (0.5 * Math.min(1, savingsRate) + 0.3 * emergencyFund + 0.2 * Math.max(0, 1 - debtRatio)));
+    const result = calculateFinancialHealth(input);
 
     return {
-      score,
-      subScores: {
-        savingsRate: Math.round(savingsRate * 100),
-        emergencyFund: emergencyFund * 100,
-        debtRatio: Math.round(Math.min(1, debtRatio) * 100)
-      },
-      suggestions: ['Increase savings rate', 'Build emergency fund to 3-6 months', 'Pay down high-interest debt'],
-      risk_note: 'This score is illustrative and educational only.',
-      educational_only: true
+      ...result,
+      risk_note: 'This is an educational score based on general personal-finance heuristics, not financial advice.',
+      educational_only: true as const
     };
   }
 }

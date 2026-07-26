@@ -16,7 +16,9 @@
     "sweep": "npm run build:server && node scripts/sweep.mjs",
     "sweep:fast": "node scripts/sweep.mjs",
     "audit:secrets": "node scripts/secrets-audit.mjs",
-    "pack": "nitrostack-cli pack"
+    "pack": "nitrostack-cli pack",
+    "test": "set -e; for f in $(find src -name '*.test.ts'); do node --import tsx \"$f\"; done",
+    "verify:mfapi": "tsx scripts/verify-mfapi.ts"
   },
   "dependencies": {
     "dotenv": "16.6.1",
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@nitrostack/cli": "1.0.15",
     "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
     "typescript": "5.9.3"
   },
   "author": "deepak",

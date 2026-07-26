@@ -3,7 +3,7 @@ import { FinancialHealthTools } from './financial-health.tools.js';
 
 @Module({
   name: 'financial-health',
-  description: 'Financial health scoring and suggestions',
+  description: 'Financial health scoring',
   controllers: [FinancialHealthTools]
 })
 export class FinancialHealthModule {}
