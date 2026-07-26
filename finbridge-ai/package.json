@@ -19,7 +19,8 @@
     "pack": "nitrostack-cli pack",
     "test:eligibility": "node --test tests/eligibility.test.ts",
     "test": "npm run build:server && node --test dist/modules/growth/growth.service.test.js dist/modules/growth/growth.tools.test.js dist/modules/financial-health/financial-health.logic.test.js dist/modules/financial-health/financial-health.tools.test.js tests/eligibility.test.ts",
-    "verify:mfapi": "tsx scripts/verify-mfapi.ts"
+    "verify:mfapi": "tsx scripts/verify-mfapi.ts",
+    "verify:tools": "npm run build:server && node scripts/verify-tools.mjs"
   },
   "dependencies": {
     "dotenv": "16.6.1",

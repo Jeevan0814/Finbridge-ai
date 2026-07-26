@@ -164,6 +164,29 @@ more, per the rule in `CONTRIBUTING.md`. Each run writes JSON to `sweeps/`
 
 Exit codes: `0` all green, `1` at least one check failed, `2` could not run.
 
+### If the sweep can't connect
+
+`npm run sweep` needs the server to answer MCP JSON-RPC over stdio. That path
+could **not** be validated before handover — when `dist/index.js` is spawned as a
+child process with piped stdio it produced no output and did not answer
+`initialize`, though the same code initializes correctly when imported in-process
+(`✅ Application initialized with 4 tools, 2 resources, 2 prompts`). This may be
+environment-specific. Treat your first sweep as the real test.
+
+If it times out, don't debug it during the gate — run the in-process verifier
+instead, which checks the same logic without the transport:
+
+```bash
+npm run verify:tools
+```
+
+14 checks: rulebook size, contract conformance of every scheme, no placeholder
+links, three eligibility boundary cases, CAGR bands for all four fund
+categories, graceful degradation when mfapi.in is unreachable, financial-health
+sub-scores, glossary size, and that no module resolves `data/` from
+`process.cwd()`. Green there means the tools are sound and any remaining problem
+is transport or deployment, which narrows the search a lot.
+
 > The eligibility call in the sweep uses a 10-year-old girl child on purpose —
 > the SSY boundary. When Deepak's real evaluator lands it should return all 7
 > schemes sorted; the stub returns 2 + 2. The sweep reports the count rather
