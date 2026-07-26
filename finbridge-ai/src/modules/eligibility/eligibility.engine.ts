@@ -43,6 +43,9 @@ function findFailedCondition(scheme: Scheme, input: CheckSchemeEligibilityInput)
   if (scheme.taxPayerStatus === 'excluded' && input.isTaxPayer) {
     return 'Income-tax payers are excluded from this scheme';
   }
+  if (scheme.occupations && scheme.occupations.length > 0 && !scheme.occupations.includes(input.occupation)) {
+    return `Scheme is restricted to ${scheme.occupations.join(', ')} applicants (applicant is ${input.occupation})`;
+  }
   return null;
 }
 
@@ -59,6 +62,12 @@ function buildEligibleReason(scheme: Scheme, input: CheckSchemeEligibilityInput)
   }
   if (scheme.taxPayerStatus === 'required') {
     parts.push('meets the tax-payer requirement');
+  }
+  if (scheme.taxPayerStatus === 'excluded') {
+    parts.push('is not an income-tax payer');
+  }
+  if (scheme.occupations && scheme.occupations.length > 0) {
+    parts.push(`occupation ${input.occupation} is eligible`);
   }
   return `Meets all criteria: ${parts.join(', ')}`;
 }

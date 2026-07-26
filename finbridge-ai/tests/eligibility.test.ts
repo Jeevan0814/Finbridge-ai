@@ -1,12 +1,21 @@
-import { test } from 'node:test';
+import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { evaluateEligibility } from '../src/modules/eligibility/eligibility.engine.ts';
 import type { CheckSchemeEligibilityInput, Scheme } from '../src/shared/contracts.ts';
+import { Scheme as SchemeSchema } from '../src/shared/contracts.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// Importing the zod schemas pulls in @nitrostack/core, whose DI container keeps
+// the event loop alive (it targets a long-running server, not a one-off test
+// process). Force exit once this file finishes so `npm test` doesn't hang.
+// Same approach as src/modules/growth/growth.service.test.ts.
+after(() => {
+  setTimeout(() => process.exit(process.exitCode ?? 0), 100);
+});
 
 function loadRealSchemes(): Scheme[] {
   const file = path.join(__dirname, '..', 'data', 'schemes.json');
@@ -93,4 +102,39 @@ test('income sitting exactly at the ceiling qualifies; one rupee over does not',
   const overCeiling = evaluateEligibility([syntheticScheme], baseInput({ monthlyIncome: 25001 }));
   assert.equal(overCeiling.ineligible.length, 1);
   assert.match(overCeiling.ineligible[0].failedCondition, /exceeds the income ceiling/);
+});
+
+// --- occupation enforcement (added +4h) ---------------------------------
+// Regression guard: `occupation` was accepted by the tool and silently ignored
+// by the engine. These fail if that ever comes back.
+
+function schemeWithOccupations(occupations: Scheme['occupations']): Scheme[] {
+  const [first] = loadRealSchemes();
+  return [{ ...first, ageMin: 0, ageMax: null, gender: null, requiresExistingBankAccount: false, taxPayerStatus: 'not_applicable', occupations }];
+}
+
+test('occupation restriction rejects a non-matching applicant with a named reason', () => {
+  const result = evaluateEligibility(schemeWithOccupations(['retired']), baseInput({ occupation: 'salaried' }));
+  assert.equal(result.eligible.length, 0);
+  assert.match(result.ineligible[0].failedCondition, /restricted to retired/);
+});
+
+test('occupation restriction admits a matching applicant', () => {
+  const result = evaluateEligibility(schemeWithOccupations(['retired']), baseInput({ occupation: 'retired' }));
+  assert.equal(result.eligible.length, 1);
+  assert.match(result.eligible[0].reason, /occupation retired is eligible/);
+});
+
+test('an empty occupations array means no occupation restriction', () => {
+  for (const occupation of ['salaried', 'self_employed', 'student', 'homemaker', 'retired', 'unemployed'] as const) {
+    const result = evaluateEligibility(schemeWithOccupations([]), baseInput({ occupation }));
+    assert.equal(result.eligible.length, 1, `${occupation} should not be blocked`);
+  }
+});
+
+test('every scheme in the real rulebook satisfies the frozen Scheme contract', () => {
+  for (const scheme of loadRealSchemes()) {
+    const parsed = SchemeSchema.safeParse(scheme);
+    assert.ok(parsed.success, `${scheme.schemeId} does not match the contract`);
+  }
 });

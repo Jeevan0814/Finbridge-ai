@@ -33,7 +33,10 @@ export const Scheme = z.object({
   incomeCeiling: z.number().nullable(),
   gender: Gender.optional().nullable(),
   requiresExistingBankAccount: z.boolean(),
-  taxPayerStatus: z.enum(['required', 'optional', 'not_applicable', 'excluded']),  // AMENDED +4h (all four agreed): APY excludes income-tax payers (Finance Act 2021, effective Oct 2022)
+  taxPayerStatus: z.enum(['required', 'optional', 'not_applicable', 'excluded']),
+  // AMENDED +4h: empty array or omitted = no occupation restriction.
+  // Without this the tool accepted `occupation` and silently ignored it.
+  occupations: z.array(Occupation).optional().default([]),
   benefits: z.array(z.string()),
   documents: z.array(z.string()),
   applyLink: z.string().url()

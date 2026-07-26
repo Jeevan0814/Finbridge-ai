@@ -18,7 +18,7 @@
     "audit:secrets": "node scripts/secrets-audit.mjs",
     "pack": "nitrostack-cli pack",
     "test:eligibility": "node --test tests/eligibility.test.ts",
-    "test": "set -e; for f in $(find src -name '*.test.ts'); do node --import tsx \"$f\"; done",
+    "test": "npm run build:server && node --test dist/modules/growth/growth.service.test.js dist/modules/growth/growth.tools.test.js dist/modules/financial-health/financial-health.logic.test.js dist/modules/financial-health/financial-health.tools.test.js tests/eligibility.test.ts",
     "verify:mfapi": "tsx scripts/verify-mfapi.ts"
   },
   "dependencies": {
