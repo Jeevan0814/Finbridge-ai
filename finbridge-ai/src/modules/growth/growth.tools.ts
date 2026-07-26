@@ -21,7 +21,6 @@ export class GrowthTools {
     description:
       'Projects a low/high range for a monthly SIP investment using live mutual fund NAV data. Never returns a single confident number.',
     inputSchema: ProjectGrowthInput,
-    outputSchema: ProjectGrowthOutput,
     examples: {
       request: { monthlyAmount: 2000, years: 15, fundCategory: 'index' },
       response: {

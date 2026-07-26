@@ -8,7 +8,6 @@ export class FinancialHealthTools {
     description:
       'Scores overall financial health from income, expenses, savings, and debt, with sub-scores and actionable suggestions.',
     inputSchema: FinancialHealthInput,
-    outputSchema: FinancialHealthOutput,
     examples: {
       request: {
         monthlyIncome: 60000,

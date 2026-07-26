@@ -39,8 +39,9 @@ export class KnowledgeResources {
   })
   async getSchemes(uri: string, ctx: ExecutionContext) {
     ctx.logger.info('Resource requested', { uri: 'finbridge://schemes' });
-    const text = readDataFile('schemes.json', ctx);
-    return { contents: [{ uri, mimeType: 'application/json', text }] };
+    // NitroStack builds the { contents: [...] } envelope itself. Returning one
+    // here nests it, and the client receives an envelope inside .text.
+    return readDataFile('schemes.json', ctx);
   }
 
   @Resource({
@@ -52,7 +53,6 @@ export class KnowledgeResources {
   })
   async getGlossary(uri: string, ctx: ExecutionContext) {
     ctx.logger.info('Resource requested', { uri: 'finbridge://glossary' });
-    const text = readDataFile('glossary.json', ctx);
-    return { contents: [{ uri, mimeType: 'application/json', text }] };
+    return readDataFile('glossary.json', ctx);
   }
 }

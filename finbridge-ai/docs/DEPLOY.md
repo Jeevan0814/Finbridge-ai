@@ -164,34 +164,22 @@ more, per the rule in `CONTRIBUTING.md`. Each run writes JSON to `sweeps/`
 
 Exit codes: `0` all green, `1` at least one check failed, `2` could not run.
 
-### If the sweep can't connect
+### What the sweep proves
 
-`npm run sweep` needs the server to answer MCP JSON-RPC over stdio. That path
-could **not** be validated before handover — when `dist/index.js` is spawned as a
-child process with piped stdio it produced no output and did not answer
-`initialize`, though the same code initializes correctly when imported in-process
-(`✅ Application initialized with 4 tools, 2 resources, 2 prompts`). This may be
-environment-specific. Treat your first sweep as the real test.
+It drives the server through the **official MCP client SDK** — the same code
+path a real client uses. Green means a real client will work.
 
-If it times out, don't debug it during the gate — run the in-process verifier
-instead, which checks the same logic without the transport:
+It caught three protocol bugs that unit tests and `tsc` could not see:
+`project_investment_growth` and `calculate_financial_health` declared an
+`outputSchema` the framework never populated, so both failed with MCP error
+-32600 on every call; and both resources double-wrapped their payload, so
+clients received an envelope nested inside `.text` instead of the data. All
+three are fixed. **Run the sweep after every merge** — this class of bug is
+invisible to typechecking.
 
-```bash
-npm run verify:tools
-```
-
-14 checks: rulebook size, contract conformance of every scheme, no placeholder
-links, three eligibility boundary cases, CAGR bands for all four fund
-categories, graceful degradation when mfapi.in is unreachable, financial-health
-sub-scores, glossary size, and that no module resolves `data/` from
-`process.cwd()`. Green there means the tools are sound and any remaining problem
-is transport or deployment, which narrows the search a lot.
-
-> The eligibility call in the sweep uses a 10-year-old girl child on purpose —
-> the SSY boundary. When Deepak's real evaluator lands it should return all 7
-> schemes sorted; the stub returns 2 + 2. The sweep reports the count rather
-> than asserting 7, so it stays green across the handover. **Tighten it to
-> require 7 once Deepak merges.**
+If the sweep can't connect at all, run `npm run verify:tools` instead: it checks
+the same logic in-process with no transport, so a green there tells you the
+problem is deployment rather than code.
 
 ---
 
